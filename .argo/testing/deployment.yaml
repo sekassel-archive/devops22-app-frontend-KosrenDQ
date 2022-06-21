@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    workload.user.cattle.io/workloadselector: apps.deployment-testing-app-frontend
+  name: app-frontend
+  namespace: testing
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.deployment-testing-app-frontend
+  template:
+    metadata:
+      labels:
+        workload.user.cattle.io/workloadselector: apps.deployment-testing-app-frontend
+    spec:
+      containers:
+        - image: registry.sec.devops.uniks.de/app-frontend:0.1.0
+          name: app-frontend
+      imagePullSecrets:
+        - name: registry
