@@ -1,0 +1,142 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # Run the tests
+  test:
+    runs-on: [self-hosted, default]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon-x11-0 libxcomposite-dev libxdamage1 libxrandr2 libgbm-dev libpangocairo-1.0-0 libasound2
+      - uses: browser-actions/setup-chrome@latest
+      - name: Run tests
+        run: |
+          export CHROME_BIN=/opt/hostedtoolcache/chromium/latest/x64/chrome
+          npm ci --legacy-peer-deps
+          npm test -- --watch=false --progress=false --browsers=ChromeHeadlessCI
+  
+  # Publish
+  publish:
+    # The type of runner that the job will run on
+    runs-on: [self-hosted, default]
+    needs: test
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get version
+        id: package-version
+        run: |
+          echo "Reading package.json from ./package.json"
+          PACKAGE_VERSION=$(cat ./package.json | jq '.version' | tr -d '"')
+          echo ::set-output name=current-version::$PACKAGE_VERSION
+      - name: Build docker file
+        run: |
+          docker login ${{ secrets.DOCKER_URL }} -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t ${{ secrets.DOCKER_URL }}/app-frontend:${{ steps.package-version.outputs.current-version }} .
+          docker push ${{ secrets.DOCKER_URL }}/app-frontend:${{ steps.package-version.outputs.current-version }}    
+
+  post-publish-dev:
+    runs-on: [self-hosted, default]
+    needs: publish
+    if: github.ref_name == 'dev'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get version
+        id: package-version
+        run: |
+          echo "Reading package.json from ./package.json"
+          PACKAGE_VERSION=$(cat ./package.json | jq '.version' | tr -d '"')
+          echo ::set-output name=current-version::$PACKAGE_VERSION
+      - name: Update Kubernetes manifest for testing environment
+        id: update-image-test
+        uses: Charlyzzz/update-k8s-image@v1.7.1
+        with:
+          manifest-path: .argo/testing/deployment.yaml
+          new-image-tag: ${{ steps.package-version.outputs.current-version }}
+          container-name: app-frontend
+      - name: Update Kubernetes manifest for staging environment
+        id: update-image-stag
+        uses: Charlyzzz/update-k8s-image@v1.7.1
+        with:
+          manifest-path: .argo/staging/deployment.yaml
+          new-image-tag: ${{ steps.package-version.outputs.current-version }}
+          container-name: app-frontend
+      - name: Commit changes
+        run: |
+          git config --local user.email "42424242+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Update Kubernetes manifests" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+  post-publish-master:
+    runs-on: [self-hosted, default]
+    needs: publish
+    if: github.ref_name == 'master'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get version
+        id: package-version
+        run: |
+          echo "Reading package.json from ./package.json"
+          PACKAGE_VERSION=$(cat ./package.json | jq '.version' | tr -d '"')
+          echo ::set-output name=current-version::$PACKAGE_VERSION
+      - name: Update Kubernetes manifest for testing environment
+        id: update-image-test
+        uses: Charlyzzz/update-k8s-image@v1.7.1
+        with:
+          manifest-path: .argo/testing/deployment.yaml
+          new-image-tag: ${{ steps.package-version.outputs.current-version }}
+          container-name: app-frontend
+      - name: Update Kubernetes manifest for staging environment
+        id: update-image-stag
+        uses: Charlyzzz/update-k8s-image@v1.7.1
+        with:
+          manifest-path: .argo/staging/deployment.yaml
+          new-image-tag: ${{ steps.package-version.outputs.current-version }}
+          container-name: app-frontend
+      - name: Update Kubernetes manifest for production environment
+        id: update-image-prod
+        uses: Charlyzzz/update-k8s-image@v1.7.1
+        with:
+          manifest-path: .argo/production/deployment.yaml
+          new-image-tag: ${{ steps.package-version.outputs.current-version }}
+          container-name: app-frontend
+      - name: Commit changes
+        run: |
+          git config --local user.email "42424242+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Update Kubernetes manifests" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
