@@ -1,0 +1,36 @@
+<div class="btn-group btn-primary">
+    <a routerLink="/mytravel/new" class="btn">
+        <clr-icon shape="plus"></clr-icon>
+        Add
+    </a>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Destination</th>
+            <th>Board</th>
+            <th>Traveler</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let travel of travels">
+            <td class="cell">{{travel.name}}</td>
+            <td class="cell">{{travel.destination}}</td>
+            <td class="cell">{{travel.board}}</td>
+            <td class="cell">{{travel.traveler}}</td>
+            <td>
+                <a type="button" class="btn btn-icon" [routerLink]="[travel.id]">
+                    <clr-icon shape="pencil"></clr-icon>
+                </a>
+                <a type="button" class="btn btn-icon" (click)="delete(travel.id)">
+                    <clr-icon shape="trash"></clr-icon>
+                </a>
+                <a type="button" class="btn btn-icon" [routerLink]="[travel.id, 'photos']">
+                    <clr-icon shape="image-gallery"></clr-icon>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>

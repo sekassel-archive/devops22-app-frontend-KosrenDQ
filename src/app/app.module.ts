@@ -40,7 +40,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
       useFactory: initializeKeycloak,
       multi: true,
       deps: [KeycloakService],
-    }
+    },
+    { provide: Window, useValue: window }
   ],
   bootstrap: [AppComponent],
 })

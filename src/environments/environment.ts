@@ -7,6 +7,7 @@ export const environment = {
   kUrl: 'https://keycloak.sec.devops.uniks.de/auth',
   kRealm: 'tourist',
   kClientId: 'app-frontend',
+  baseUrlV1: 'http://localhost:3000/api/v1',
 };
 
 /*

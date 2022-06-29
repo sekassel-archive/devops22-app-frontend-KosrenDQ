@@ -1,0 +1,53 @@
+<div *ngIf="authenticated">
+    <div class="clr-row">
+        <div class="clr-col-12">
+            <h1 class="center">What do you like to do?</h1>
+        </div>
+    </div>
+    <div class="clr-row clr-justify-content-center">
+        <div *ngIf="hasRole('admin')" class="clr-col-3">
+            <div class="card">
+                <div class="card-block">
+                    <h3 class="card-title">Show all</h3>
+                    <p class="card-text">
+                        This action is restricted to an administrator
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a routerLink="all" routerLinkActive="active" class="btn btn-sm btn-link">Goto</a>
+                </div>
+            </div>
+        </div>
+        <div class="clr-col-3">
+            <div class="card">
+                <div class="card-block">
+                    <h3 class="card-title">New travel</h3>
+                    <p class="card-text">
+                        Find new exciting places and book it!
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a routerLink="/mytravel/new" routerLinkActive="active" class="btn btn-sm btn-link">Goto</a>
+                </div>
+            </div>
+        </div>
+        <div class="clr-col-3">
+            <div class="card">
+                <div class="card-block">
+                    <h3 class="card-title">My travel</h3>
+                    <p class="card-text">
+                        Look at your very own experiences
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a routerLink="/mytravel" routerLinkActive="active" class="btn btn-sm btn-link">Goto</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="!authenticated" class="clr-row">
+    <div class="clr-col-12">
+        <h1 class="center">Please log in right over in the upper right corner :D</h1>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+<form clrForm clrLayout="horizontal" clrLabelSize="1" [formGroup]="travelForm">
+    <clr-input-container>
+        <label>Name</label>
+        <input clrInput type="text" formControlName="name" />
+        <clr-control-helper>Whats your name, mate?</clr-control-helper>
+        <clr-control-error>We really need your name!</clr-control-error>
+    </clr-input-container>
+    <clr-input-container>
+        <label>Destination</label>
+        <input clrInput type="text" formControlName="destination" [readonly]="currentId" />
+        <clr-control-helper>Where you want to go?</clr-control-helper>
+        <clr-control-error>No destination no travel!</clr-control-error>
+    </clr-input-container>
+    <clr-combobox-container>
+        <label>Board</label>
+        <clr-combobox formControlName="board">
+            <clr-options>
+                <clr-option clrValue="breakfast">Breakfast</clr-option>
+                <clr-option clrValue="half-board">Half-Board</clr-option>
+                <clr-option clrValue="full-board">Full-Board</clr-option>
+                <clr-option clrValue="all-inclusive">All-Inclusive</clr-option>
+            </clr-options>
+        </clr-combobox>
+        <clr-control-helper>Choose your weapon!</clr-control-helper>
+        <clr-control-error>Everyone needs something to eat!</clr-control-error>
+    </clr-combobox-container>
+    <clr-input-container>
+        <label>Traveler</label>
+        <input clrInput type="number" formControlName="traveler" [readonly]="currentId" />
+        <clr-control-helper>You and your friends?</clr-control-helper>
+        <clr-control-error>How many I asked?!</clr-control-error>
+    </clr-input-container>
+    <button class="btn btn-primary" type="submit" (click)="save()">Save</button>
+    <button class="btn" type="button" (click)="reset()">Reset</button>
+</form>

@@ -1,0 +1,45 @@
+<div class="btn-group btn-primary">
+    <label class="btn">
+        <input #filechooser type="file" accept="image/*" (change)="onFileSelected($event)">
+    </label>
+    <button class="btn" (click)="upload()">
+        <clr-icon shape="upload"></clr-icon>
+        Upload
+    </button>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Filename</th>
+            <th>Uploaded</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let photo of photos">
+            <td class="cell">{{photo.filename}}</td>
+            <td class="cell">{{photo.uploadDate}}</td>
+            <td>
+                <a type="button" class="btn btn-icon" (click)="onPicture(photo._id)">
+                    <clr-icon shape="picture"></clr-icon>
+                </a>
+                <a type="button" class="btn btn-icon" (click)="download(photo._id, photo.filename)">
+                    <clr-icon shape="download"></clr-icon>
+                </a>
+                <a type="button" class="btn btn-icon" (click)="delete(photo._id)">
+                    <clr-icon shape="trash"></clr-icon>
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<clr-modal [(clrModalOpen)]="isOpen" clrModalSize="xl">
+    <h3 class="modal-title">Such a nice photo!</h3>
+    <div class="modal-body">
+       <img [src]="imageToShow"> 
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="isOpen = false; imageToShow = null">Ok</button>
+    </div>
+</clr-modal>
