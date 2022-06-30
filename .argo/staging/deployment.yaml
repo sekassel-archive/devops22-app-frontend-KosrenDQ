@@ -17,7 +17,7 @@ spec:
         workload.user.cattle.io/workloadselector: apps.deployment-staging-app-frontend
     spec:
       containers:
-        - image: registry.sec.devops.uniks.de/app-frontend:0.2.0
+        - image: registry.sec.devops.uniks.de/app-frontend:0.2.1
           name: app-frontend
       imagePullSecrets:
         - name: registry
