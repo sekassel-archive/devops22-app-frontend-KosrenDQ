@@ -1,0 +1,18 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Destination</th>
+      <th>Board</th>
+      <th>Traveler</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let travel of travels">
+      <td class="cell">{{ travel.name }}</td>
+      <td class="cell">{{ travel.destination }}</td>
+      <td class="cell">{{ travel.board }}</td>
+      <td class="cell">{{ travel.traveler }}</td>
+    </tr>
+  </tbody>
+</table>

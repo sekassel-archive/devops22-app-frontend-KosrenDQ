@@ -11,6 +11,14 @@ const routes: Routes = [
     },
   },
   {
+    path: 'all',
+    loadChildren: () => import('./all/all.module').then((m) => m.AllModule),
+    canActivate: [AuthGuard],
+    data: {
+      roles: ['admin'],
+    },
+  },
+  {
     path: 'mytravel',
     loadChildren: () =>
       import('./travel/travel.module').then((m) => m.TravelModule),
